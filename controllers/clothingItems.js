@@ -7,11 +7,19 @@ const getClothingItems = (req, res) => {
 };
 
 const createClothingItem = (req, res) => {
+  const userId = req.user._id;
   const { name, weather, imageUrl } = req.body;
 
-  ClothingItem.create({ name, weather, imageUrl })
+  ClothingItem.create({ name, weather, imageUrl, owner: userId })
     .then((item) => res.send({ data: item }))
-    .catch(() => res.status(404).send({ message: "Error" }));
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError") {
+        res.status(400).send({ message: "Invalid data provided" });
+      } else {
+        res.status(500).send({ message: "An error occurred on the server" });
+      }
+    });
 };
 
 const deleteClothingItem = (req, res) => {
