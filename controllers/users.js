@@ -13,9 +13,9 @@ const getUser = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, imageUrl } = req.body;
+  const { name, avatar } = req.body;
 
-  User.create({ name, imageUrl })
+  User.create({ name, avatar })
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(404).send({ message: "Error" }));
 };
