@@ -50,8 +50,60 @@ const deleteClothingItem = (req, res) => {
     });
 };
 
+const likeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    {
+      $addToSet: { likes: req.user._id },
+    },
+    { new: true }
+  )
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = NOT_FOUND_ERROR_CODE;
+      throw error;
+    })
+    .then((item) => res.send({ data: item }))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError" || err.name === "CastError") {
+        res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+      } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
+        res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
+};
+
+const dislikeItem = (req, res) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = NOT_FOUND_ERROR_CODE;
+      throw error;
+    })
+    .then((item) => res.send({ data: item }))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError" || err.name === "CastError") {
+        res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+      } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
+        res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: err.message });
+      }
+    });
+};
+
 module.exports = {
   getClothingItems,
   createClothingItem,
   deleteClothingItem,
+  likeItem,
+  dislikeItem,
 };
