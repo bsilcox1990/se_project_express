@@ -4,7 +4,7 @@ const clothingItem = require("./clothingItems");
 
 router.use("/users", user);
 router.use("/items", clothingItem);
-router.use((req, res, next) => {
+router.use((req, res) => {
   res.status(404).json({
     message: "Requested resource not found",
   });

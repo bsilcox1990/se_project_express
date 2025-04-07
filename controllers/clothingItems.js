@@ -1,9 +1,17 @@
 const ClothingItem = require("../models/clothingItem");
+const {
+  INVALID_DATA_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  DEFAULT_ERROR_CODE,
+} = require("../utils/errors");
 
 const getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((item) => res.send({ data: item }))
-    .catch(() => res.status(404).send({ message: "Error" }));
+    .catch((err) => {
+      console.error(err);
+      res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+    });
 };
 
 const createClothingItem = (req, res) => {
@@ -15,17 +23,31 @@ const createClothingItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Invalid data provided" });
+        res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else {
-        res.status(500).send({ message: "An error occurred on the server" });
+        res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
       }
     });
 };
 
 const deleteClothingItem = (req, res) => {
   ClothingItem.findByIdAndDelete(req.params.itemId)
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = NOT_FOUND_ERROR_CODE;
+      throw error;
+    })
     .then((item) => res.send({ data: item }))
-    .catch(() => res.status(404).send({ message: "Error" }));
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError" || err.name === "CastError") {
+        res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+      } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
+        res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      } else {
+        res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+      }
+    });
 };
 
 module.exports = {
