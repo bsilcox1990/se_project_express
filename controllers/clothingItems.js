@@ -23,7 +23,7 @@ const createClothingItem = (req, res) => {
 };
 
 const deleteClothingItem = (req, res) => {
-  ClothingItem.findByIdAndDelete(req.params._id)
+  ClothingItem.findByIdAndDelete(req.params.itemId)
     .then((item) => res.send({ data: item }))
     .catch(() => res.status(404).send({ message: "Error" }));
 };
