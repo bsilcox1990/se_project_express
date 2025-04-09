@@ -10,7 +10,9 @@ const getUsers = (req, res) => {
     .then((users) => res.send({ data: users }))
     .catch((err) => {
       console.error(err);
-      res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+      res
+        .status(DEFAULT_ERROR_CODE)
+        .send({ message: "An error has occured on the server" });
     });
 };
 
@@ -29,7 +31,9 @@ const getUser = (req, res) => {
       } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
         res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
       } else {
-        res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+        res
+          .status(DEFAULT_ERROR_CODE)
+          .send({ message: "An error has occured on the server" });
       }
     });
 };
@@ -44,7 +48,9 @@ const createUser = (req, res) => {
       if (err.name === "ValidationError") {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else {
-        res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+        res
+          .status(DEFAULT_ERROR_CODE)
+          .send({ message: "An error has occured on the server" });
       }
     });
 };

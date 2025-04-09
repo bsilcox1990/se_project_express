@@ -10,7 +10,9 @@ const getClothingItems = (req, res) => {
     .then((item) => res.send({ data: item }))
     .catch((err) => {
       console.error(err);
-      res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+      res
+        .status(DEFAULT_ERROR_CODE)
+        .send({ message: "An error has occured on the server" });
     });
 };
 
@@ -25,7 +27,9 @@ const createClothingItem = (req, res) => {
       if (err.name === "ValidationError") {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else {
-        res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+        res
+          .status(DEFAULT_ERROR_CODE)
+          .send({ message: "An error has occured on the server" });
       }
     });
 };
@@ -45,7 +49,9 @@ const deleteClothingItem = (req, res) => {
       } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
         res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
       } else {
-        res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
+        res
+          .status(DEFAULT_ERROR_CODE)
+          .send({ message: "An error has occured on the server" });
       }
     });
 };
@@ -71,7 +77,9 @@ const likeItem = (req, res) => {
       } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
         res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
       } else {
-        res.status(500).send({ message: err.message });
+        res
+          .status(DEFAULT_ERROR_CODE)
+          .send({ message: "An error has occured on the server" });
       }
     });
 };
@@ -95,7 +103,9 @@ const dislikeItem = (req, res) => {
       } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
         res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
       } else {
-        res.status(500).send({ message: err.message });
+        res
+          .status(DEFAULT_ERROR_CODE)
+          .send({ message: "An error has occured on the server" });
       }
     });
 };
