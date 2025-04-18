@@ -1,8 +1,13 @@
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = require("../utils/config");
 const {
   INVALID_DATA_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   DEFAULT_ERROR_CODE,
+  CONFLICT_ERROR_CODE,
+  UNAUTHORIZED_ERROR_CODE,
 } = require("../utils/errors");
 
 const getUsers = (req, res) => {
@@ -39,14 +44,20 @@ const getUser = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar })
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      User.create({ name, avatar, email, password: hash });
+    })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+      } else if (err.statusCode === 11000) {
+        res.status(CONFLICT_ERROR_CODE).send({ message: err.message });
       } else {
         res
           .status(DEFAULT_ERROR_CODE)
@@ -55,8 +66,23 @@ const createUser = (req, res) => {
     });
 };
 
+const login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
+    });
+};
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
+  login,
 };
