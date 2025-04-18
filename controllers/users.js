@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = require("../utils/config");
+const { JWT_SECRET } = require("../utils/config");
 const {
   INVALID_DATA_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
@@ -10,7 +10,7 @@ const {
   UNAUTHORIZED_ERROR_CODE,
 } = require("../utils/errors");
 
-const getUsers = (req, res) => {
+/* const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch((err) => {
@@ -19,10 +19,10 @@ const getUsers = (req, res) => {
         .status(DEFAULT_ERROR_CODE)
         .send({ message: "An error has occured on the server" });
     });
-};
+}; */
 
-const getUser = (req, res) => {
-  User.findById(req.params.userId)
+const getCurrentUser = (req, res) => {
+  User.findById(req.user._id)
     .orFail(() => {
       const error = new Error("Item ID not found");
       error.statusCode = NOT_FOUND_ERROR_CODE;
@@ -49,7 +49,7 @@ const createUser = (req, res) => {
   bcrypt
     .hash(password, 10)
     .then((hash) => {
-      User.create({ name, avatar, email, password: hash });
+      return User.create({ name, avatar, email, password: hash });
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -80,9 +80,11 @@ const login = (req, res) => {
     });
 };
 
+const updateProfile = (req, res) => {};
+
 module.exports = {
-  getUsers,
-  getUser,
+  getCurrentUser,
   createUser,
   login,
+  updateProfile,
 };

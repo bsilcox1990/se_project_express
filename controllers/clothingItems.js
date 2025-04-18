@@ -3,6 +3,7 @@ const {
   INVALID_DATA_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
   DEFAULT_ERROR_CODE,
+  FORBIDDEN_ERROR_CODE,
 } = require("../utils/errors");
 
 const getClothingItems = (req, res) => {
