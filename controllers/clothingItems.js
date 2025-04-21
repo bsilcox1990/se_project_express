@@ -25,7 +25,7 @@ const createClothingItem = (req, res) => {
     .then((item) => res.send({ data: item }))
     .catch((err) => {
       console.error(err);
-      if (err.message === "ValidationError") {
+      if (err.name === "ValidationError") {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else {
         res
