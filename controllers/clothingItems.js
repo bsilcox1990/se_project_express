@@ -42,13 +42,23 @@ const deleteClothingItem = (req, res) => {
       error.statusCode = NOT_FOUND_ERROR_CODE;
       throw error;
     })
-    .then((item) => res.send({ data: item }))
+    .then((item) => {
+      if (req.params.itemId === req.user._id) {
+        res.send({ data: item });
+      } else {
+        const error = new Error("This clothing item is not in your profile");
+        error.statusCode = FORBIDDEN_ERROR_CODE;
+        throw error;
+      }
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError" || err.name === "CastError") {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
         res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      } else if (err.statsCode === FORBIDDEN_ERROR_CODE) {
+        res.status(FORBIDDEN_ERROR_CODE).send({ message: err.message });
       } else {
         res
           .status(DEFAULT_ERROR_CODE)
