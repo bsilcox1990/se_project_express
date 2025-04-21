@@ -25,7 +25,7 @@ const createClothingItem = (req, res) => {
     .then((item) => res.send({ data: item }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError") {
+      if (err.message === "ValidationError") {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else {
         res
@@ -43,10 +43,13 @@ const deleteClothingItem = (req, res) => {
       throw error;
     })
     .then((item) => {
-      if (req.params.itemId === req.user._id) {
+      const itemObject = item.toObject();
+      if (itemObject.owner.equals(req.user._id)) {
         res.send({ data: item });
       } else {
-        const error = new Error("This clothing item is not in your profile");
+        const error = new Error(
+          "Forbidden: You do not have permission to delete this item."
+        );
         error.statusCode = FORBIDDEN_ERROR_CODE;
         throw error;
       }
@@ -57,7 +60,7 @@ const deleteClothingItem = (req, res) => {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
         res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
-      } else if (err.statsCode === FORBIDDEN_ERROR_CODE) {
+      } else if (err.statusCode === FORBIDDEN_ERROR_CODE) {
         res.status(FORBIDDEN_ERROR_CODE).send({ message: err.message });
       } else {
         res
