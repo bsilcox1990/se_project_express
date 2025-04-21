@@ -56,7 +56,7 @@ const createUser = (req, res) => {
       console.error(err);
       if (err.name === "ValidationError") {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
-      } else if (err.statusCode === 11000) {
+      } else if (err.code === 11000) {
         res.status(CONFLICT_ERROR_CODE).send({ message: err.message });
       } else {
         res
@@ -80,7 +80,32 @@ const login = (req, res) => {
     });
 };
 
-const updateProfile = (req, res) => {};
+const updateProfile = (req, res) => {
+  const { name, avatar } = req.body;
+
+  User.findOneAndUpdate(
+    { _id: req.user._id },
+    { $set: { name: name, avatar: avatar } },
+    { new: true, runValidators: true }
+  )
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = NOT_FOUND_ERROR_CODE;
+      throw error;
+    })
+    .then((user) => {
+      res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.statusCode === NOT_FOUND_ERROR_CODE) {
+        res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      } else {
+        res
+          .status(DEFAULT_ERROR_CODE)
+          .send({ message: "An error has occured on the server" });
+      }
+    });
+};
 
 module.exports = {
   getCurrentUser,
