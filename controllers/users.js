@@ -1,6 +1,6 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 const {
   INVALID_DATA_ERROR_CODE,
@@ -48,9 +48,7 @@ const createUser = (req, res) => {
 
   bcrypt
     .hash(password, 10)
-    .then((hash) => {
-      return User.create({ name, avatar, email, password: hash });
-    })
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
       const userObject = user.toObject();
       delete userObject.password;
@@ -89,7 +87,7 @@ const updateProfile = (req, res) => {
 
   User.findOneAndUpdate(
     { _id: req.user._id },
-    { $set: { name: name, avatar: avatar } },
+    { $set: { name, avatar } },
     { new: true, runValidators: true }
   )
     .orFail(() => {
