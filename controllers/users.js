@@ -10,17 +10,6 @@ const {
   UNAUTHORIZED_ERROR_CODE,
 } = require("../utils/errors");
 
-/* const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.send({ data: users }))
-    .catch((err) => {
-      console.error(err);
-      res
-        .status(DEFAULT_ERROR_CODE)
-        .send({ message: "An error has occured on the server" });
-    });
-}; */
-
 const getCurrentUser = (req, res) => {
   User.findById(req.user._id)
     .orFail(() => {

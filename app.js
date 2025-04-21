@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
+const cors = require("cors");
 const mainRouter = require("./routes/index");
 const { login, createUser } = require("./controllers/users");
 
@@ -15,6 +16,7 @@ mongoose
   .catch(console.error);
 
 app.use(helmet());
+app.use(cors());
 app.use(express.json());
 app.post("/signup", createUser);
 app.post("/signin", login);
