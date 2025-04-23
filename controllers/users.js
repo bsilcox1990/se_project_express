@@ -72,12 +72,13 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch((err) => {
+      console.error(err);
       if (err.message === "Incorrect email or password!") {
-        res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+        res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
       } else if (err.name === "ValidationError") {
         res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else {
-        res.status(UNAUTHORIZED_ERROR_CODE).send({ message: err.message });
+        res.status(DEFAULT_ERROR_CODE).send({ message: err.message });
       }
     });
 };
@@ -99,8 +100,11 @@ const updateProfile = (req, res) => {
       res.send({ data: user });
     })
     .catch((err) => {
+      console.error(err);
       if (err.statusCode === NOT_FOUND_ERROR_CODE) {
         res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      } else if (err.name === "ValidationError") {
+        res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
       } else {
         res
           .status(DEFAULT_ERROR_CODE)

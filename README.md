@@ -6,15 +6,25 @@ The WTWR (What to Wear) backend is an Express.js server designed to power a weat
 
 - Clothing item management
 
-  - Add new clothing items to the database
+  - Add new clothing items to the database (authenticated)
   - Retrieve all clothing items from the database
-  - Like or unlike clothing items
-  - Delete clothing items
+  - Like or unlike clothing items (authenticated)
+  - Delete clothing items (authenticated)
 
 - User management
 
   - Create new user accounts
-  - Retrieve all users or a specific user by ID
+  - Sign into accounts with secure authentication
+  - Update existing user profiles (authenticated)
+  - Retrieve current user information (authenticated)
+
+- Authentication and security
+
+  - Secure user authentication using JSON Web Tokens (JWT)
+  - Password hashing with bcrypt for enhanced security
+  - Authentication middleware to protect routes
+  - Helmet for securing HTTP headers
+  - CORS to enable cross-origin resource sharing
 
 - Database integration
 
@@ -36,8 +46,19 @@ The WTWR (What to Wear) backend is an Express.js server designed to power a weat
 - Custom Middleware: Enchances reqeust processing
 - Custom validators: Ensures data integrity for incoming requests
 - Error handling: System for managing client and server errors
+- JSON Web Token (JWT): Used for secure user authentication
+- bcrypt: Used for hashing and securing user passwords
+- Helmet: Secures the application by setting various HTTP headers
+- CORS: Enables cross-origin resource sharing for API access
 - ESlint: Enforces code quality and consistency
 - Postman: Used for testing and validating API endpoints
+
+## Authentication details
+
+- JSON Web Token (JWT): Upon successful login, users receive a JWT, which must be included in the Authorization header for protected routes.
+- bcrypt: Passwords are hashed before being stored in the database, ensuring secure storage.
+- Auth Middleware: Applied to all clothing item routes (except retrieving all items) and user profile updates to ensure only authenticated users can access these endpoints.
+- Get Current User: A dedicated controller allows authenticated users to retrieve their own profile information.
 
 ## Running the Project
 

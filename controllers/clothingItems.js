@@ -36,7 +36,40 @@ const createClothingItem = (req, res) => {
 };
 
 const deleteClothingItem = (req, res) => {
-  ClothingItem.findByIdAndDelete(req.params.itemId)
+  ClothingItem.findById(req.params.itemId)
+    .orFail(() => {
+      const error = new Error("Item ID not found");
+      error.statusCode = NOT_FOUND_ERROR_CODE;
+      throw error;
+    })
+    .then((item) => {
+      const itemObject = item.toObject();
+      if (!itemObject.owner.equals(req.user._id)) {
+        const error = new Error(
+          "Forbidden: You do not have permission to delete this item."
+        );
+        error.statusCode = FORBIDDEN_ERROR_CODE;
+        throw error;
+      }
+      return item
+        .deleteOne()
+        .then(() => res.status(200).send({ message: "Successfully deleted" }));
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "ValidationError" || err.name === "CastError") {
+        res.status(INVALID_DATA_ERROR_CODE).send({ message: err.message });
+      } else if (err.statusCode === NOT_FOUND_ERROR_CODE) {
+        res.status(NOT_FOUND_ERROR_CODE).send({ message: err.message });
+      } else if (err.statusCode === FORBIDDEN_ERROR_CODE) {
+        res.status(FORBIDDEN_ERROR_CODE).send({ message: err.message });
+      } else {
+        res
+          .status(DEFAULT_ERROR_CODE)
+          .send({ message: "An error has occured on the server" });
+      }
+    });
+  /* ClothingItem.findByIdAndDelete(req.params.itemId)
     .orFail(() => {
       const error = new Error("Item ID not found");
       error.statusCode = NOT_FOUND_ERROR_CODE;
@@ -67,7 +100,7 @@ const deleteClothingItem = (req, res) => {
           .status(DEFAULT_ERROR_CODE)
           .send({ message: "An error has occured on the server" });
       }
-    });
+    }); */
 };
 
 const likeItem = (req, res) => {
