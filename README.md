@@ -60,6 +60,12 @@ The WTWR (What to Wear) backend is an Express.js server designed to power a weat
 - Auth Middleware: Applied to all clothing item routes (except retrieving all items) and user profile updates to ensure only authenticated users can access these endpoints.
 - Get Current User: A dedicated controller allows authenticated users to retrieve their own profile information.
 
+## Domain names
+
+- Front end: [wtwr-tripleten.jumpingcrab.com](wtwr-tripleten.jumpingcrab.com) / [www.wtwr-tripleten.jumpingcrab.com](www.wtwr-tripleten.jumpingcrab.com)
+
+- Back end / API: [api.wtwr-tripleten.jumpingcrab.com](api.wtwr-tripleten.jumpingcrab.com)
+
 ## Running the Project
 
 `npm run start` — to launch the server
